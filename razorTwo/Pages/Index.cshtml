@@ -1,0 +1,73 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "LIL BRO's SNACK TIME";
+}
+
+
+
+
+<head>
+    <link rel="stylesheet" href="snake.css">
+</head>
+<body>
+    <img src="~/images/snake.jpg" style="width:200px; height:200px;"/>
+    <p>
+        Directions: Press any arrow key to start! Eat as many BERRIES your snake body can muster.<br>
+        BUT BE CAREFUL! Eating yourself causes an instant restart. HAVE FUN!
+    </p>
+
+    <canvas id="canvas" width="400" height="400" style="background: black;">
+
+</body>
+<script>
+
+
+    let ctx   = canvas.getContext("2d");
+    let snake = [[15,15]], berry = [2,2], berry2 =[15,10], [sx,sy] = [0,0];
+
+    let score = 0;
+
+
+    //controls of lil bro
+
+    onkeydown = ({key}) => [sx,sy] =
+      { [key]: [sx,sy], ArrowRight:[sx||1, 0], ArrowLeft:[sx||-1, 0] ,
+                        ArrowDown: [0, sy||1], ArrowUp:  [0, sy||-1] }[key];
+
+
+
+    //magic behind lil bros ability to eat, grow, and reach his untimely demise
+    setInterval(() => {
+      snake.unshift([ (snake[0][0] + sx) & 15, (snake[0][1] + sy) & 15 ]);
+      if(""+snake[0,1] == berry)
+        with(Math) do berry= [ floor(random()*16), floor(random()*16) ];
+        while(snake.some(seg => ""+seg == berry));
+      else if(snake.slice(1).some(seg => ""+seg == snake[0]))
+
+
+
+
+        snake.splice(1);
+      else snake.pop();
+      ctx.clearRect(0, 0, 405, 405);
+
+
+
+
+      //lil bros food
+      ctx.fillStyle = "purple";
+      ctx.fillRect(berry[0]*24, berry[1]*24, 18, 18);
+
+      ctx.fillStyle = "orange";
+      ctx.fillRect(berry2[0]*24, berry[2]*24, 18, 18);
+
+
+
+      //lil bro himself
+      ctx.fillStyle = "white";
+      snake.forEach(([x,y]) => ctx.fillRect(x*24, y*24, 18, 18));
+    }, 125);
+
+
+</script> 

@@ -1,0 +1,492 @@
+﻿@page
+@model PrivacyModel
+@{
+    ViewData["Title"] = "ARCADE SHOOTER";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARCADE GAME</title>
+
+    <!--CSS STYLING-->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: black;
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        .game-container {
+            display: flex;
+            justify-content: center;
+            background-color: orangered;
+            border: 10px groove blueviolet;
+        }
+
+        .hole {
+            width: 65px;
+            height: 65px;
+            background-color: black;
+            border-radius: 50%;
+            border: 5px solid orange;
+            margin: 20px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .mole {
+            width: 65px;
+            height: 65px;
+            background-image: url('images/tanjiro.gif');
+            border-radius: 60%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-repeat: no-repeat;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        #scoreboard {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+            color: white;
+            border-radius: 50%;
+            border-left: 25px;
+        }
+
+        #leaderboard-list {
+            list-style-type: none;
+            padding: 0;
+            text-align: center;
+        }
+
+        button {
+            display: block;
+            margin: 10px auto;
+            font-size: 1.25em;
+            color: green;
+            border: 3px solid blue;
+            border-radius: 45%;
+        }
+
+        #timer {
+            font-size: 2em;
+            text-align: center;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <!--TIMER-->
+    <div id="timer"></div>
+
+
+    <!--ROW ONE-->
+    <div class="game-container">
+        <div class="hole hole1"><div class="mole hide"></div></div>
+        <div class="hole hole2"><div class="mole hide"></div></div>
+        <div class="hole hole3"><div class="mole hide"></div></div>
+        <div class="hole hole4"><div class="mole hide"></div></div>
+        <div class="hole hole5"><div class="mole hide"></div></div>
+        <div class="hole hole6"><div class="mole hide"></div></div>
+        <div class="hole hole7"><div class="mole hide"></div></div>
+        <div class="hole hole8"><div class="mole hide"></div></div>
+        <div class="hole hole9"><div class="mole hide"></div></div>
+        <div class="hole hole10"><div class="mole hide"></div></div>
+    </div>
+
+    <!--ROW TWO-->
+    <div class="game-container">
+        <div class="hole hole1"><div class="mole hide"></div></div>
+        <div class="hole hole2"><div class="mole hide"></div></div>
+        <div class="hole hole3"><div class="mole hide"></div></div>
+        <div class="hole hole4"><div class="mole hide"></div></div>
+        <div class="hole hole5"><div class="mole hide"></div></div>
+        <div class="hole hole6"><div class="mole hide"></div></div>
+        <div class="hole hole7"><div class="mole hide"></div></div>
+        <div class="hole hole8"><div class="mole hide"></div></div>
+        <div class="hole hole9"><div class="mole hide"></div></div>
+        <div class="hole hole10"><div class="mole hide"></div></div>
+    </div>
+
+    <!--ROW THREE-->
+    <div class="game-container">
+        <div class="hole hole1"><div class="mole hide"></div></div>
+        <div class="hole hole2"><div class="mole hide"></div></div>
+        <div class="hole hole3"><div class="mole hide"></div></div>
+        <div class="hole hole4"><div class="mole hide"></div></div>
+        <div class="hole hole5"><div class="mole hide"></div></div>
+        <div class="hole hole6"><div class="mole hide"></div></div>
+        <div class="hole hole7"><div class="mole hide"></div></div>
+        <div class="hole hole8"><div class="mole hide"></div></div>
+        <div class="hole hole9"><div class="mole hide"></div></div>
+        <div class="hole hole10"><div class="mole hide"></div></div>
+    </div>
+
+
+    <h1>ARCADE GAME</h1>
+
+
+    <!--LEADERBOARD AND CLEAR STANDINGS BUTTON-->
+    <div id="scoreboard">
+        <h2>LEADERBOARD</h2>
+        <ol id="leaderboard-list"></ol>
+        <button id="clear-leaderboard">Clear standings</button>
+    </div>
+
+
+    <!--START BUTTON-->
+    <button id="start-game">Start Run</button>
+
+
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+
+
+
+        $(document).ready(function () {
+            let score = 0;
+            let gameTimeInSeconds = 30;
+            let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+
+
+
+
+            $(".hole").click(function () {
+                if (!$(this).children().hasClass("hide")) {
+                    score++;
+                    $(this).children().addClass("hide");
+                    updateScore();
+                }
+            });
+
+
+            function updateScore() {
+                $("#score").text("Score: " + score);
+            }
+
+
+
+            function updateTimer() {
+                $("#timer").text("Time:" + timer);
+            }
+
+            function getRandomHole() {
+                return Math.floor(Math.random() * 10) + 1;
+            }
+
+
+
+
+            function showMole() {
+                const holeNum = getRandomHole();
+                $(`.hole${holeNum}`).children().removeClass("hide");
+                setTimeout(function () {
+                    $(`.hole${holeNum}`).children().addClass("hide");
+                    if (timer > 0) {
+                        showMole();
+                    } else {
+                        endGame();
+                    }
+                }, 1700);
+            }
+
+
+
+
+
+            function startGame() {
+                score = 0;
+                updateScore();
+
+
+                //BLANK PROMPT START
+                let startBruh = prompt("HIT OK TO START");
+
+
+                //SKIP TO LEADERBOARD
+                if (startBruh === 'gameOver') {
+                    endGame();
+                }
+
+                //PROMPT EASTER EGGS AND CHEATS
+
+                //OLD YOUTUBE VIDEO EASTER EGG
+                else if (startBruh === 'you the man!') {
+                    window.open("https://www.youtube.com/watch?v=L6GfcgqKQmg");
+                }
+
+                //FRIEND EASTER EGG
+                else if (startBruh === 'Shelby') {
+                    alert('OH WOW!')
+                    alert('STARTING WITH 50 POINTS!')
+                    score = 50;
+                }
+
+                //FRIEND EASTER EGG
+                else if (startBruh === 'Jazzy!!!') {
+                    alert('EVERYONE NEEDS A FRIEND LIKE JAZZY <3')
+                    alert('STARTING WITH 50 POINTS!')
+                    score = 50;
+                }
+
+                //DOG EASTER EGG
+                else if (startBruh === 'dog') {
+                    let dogQ = prompt('Do you like dogs?');
+                    if (dogQ === 'yes') {
+                        alert('STARTING WITH 50 POINTS!')
+                        score = 50;
+                    }
+                    else if (dogQ === 'no') {
+                        alert('YOU MONSTER GET OUT OF MY GAME!')
+                        window.close(); //WARNING!!!!!!!! WILL CLOSE PAGE!!!!
+                    }
+                }
+
+                //MOM EASTER EGG
+                else if (startBruh === 'mom') {
+                    alert('Thank you mother for pushing me to pursue a college degree <3')
+                }
+
+
+                //INCREASE TIME TO 60 SECONDS
+                else if (startBruh === 'too easy') {
+                    alert('GAME TIME INCREASED TO 60 SECONDS!')
+                    gameTimeInSeconds = 60;
+                }
+
+                //REDUCE TIME TO 15 SECONDS
+
+                else if (startBruh === 'insane') {
+                    alert('GAME TIME REDUCED TO 15 SECONDS!')
+                    gameTimeInSeconds = 15;
+                }
+
+                //INFINITE MODE
+
+                else if (startBruh === 'infinite') {
+                    alert('INFINITE MODE ENABLED!')
+                    gameTimeInSeconds = 99999999999;
+                }
+
+                //COOKIE EASTER EGG
+                else if (startBruh === 'cookie') {
+                    alert('YUMMY YUMMY COOKIEEE!')
+                }
+
+
+                //MANDARIN EASTER EGG
+                else if (startBruh === 'cutie') {
+                    alert('ITTY BITTY MANDARINS!')
+                }
+
+
+                //DEV EASTER EGG
+                else if (startBruh === 'dev') {
+                    alert('CREATED BY ETHAN BARNES!')
+
+                }
+
+                //DAY DEVELOPMENT WAS COMPLETED
+                else if (startBruh === 'completion') {
+                    alert('DEVELOPMENT FINISHED APRIL 12TH, 2024!')
+                }
+                //FRIEND NICKNAME EASTER EGG
+
+                else if (startBruh === 'Trash Gremlin') {
+                    alert('SHE HAS AWOKEN! but not yet risen...')
+                }
+
+
+                //BIG SMOKES ORDER EASTER EGG - BEST MOMENT IN GAMING!
+                else if (startBruh === 'Big Smoke') {
+                    alert('I\'ll have two number nines, a number nine large, a number 6 with extra dip, a number seven, two number forty fives, one with cheese and a large soda!')
+                }
+
+
+                //RICK ROLL EASTER EGG
+
+                else if (startBruh === 'Rick') {
+                    window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+                }
+
+                //PIZZA MEME EASTER EGG - START WITH 100 EXTRA POINTS
+
+                else if (startBruh === 'pizza') {
+                    let pizzaPie = prompt("extra cheese");
+                    if (pizzaPie === 'and hold the tomato sauce') {
+                        let tomatoSauce = prompt('and hold the crust.');
+                        if (tomatoSauce === 'HEY SHIMMY, GIMME A CHEESE WIT NUN!');
+                        {
+                            alert('NUN?')
+                            alert('STARTING WITH 100 POINTS!')
+                            score = 100;
+                        }
+
+
+                    }
+                }
+
+                //SILENT HILL EASTER EGG 1 - FAMOUS LINE SAID TO EDDIE
+
+                else if (startBruh === 'james') {
+                    alert("This town is full of monsters...how can you sit there and eat pizza?")
+                }
+
+                //SILENT HILL EASTER EGG 2 - START WITH 300 EXTRA POINTS
+                else if (startBruh === 'Maria') {
+                    let mariaConvo = prompt("I\'m not your Mary...");
+                    if (mariaConvo === 'So, you\'re Maria?') {
+                        let mariaConvo2 = prompt('I am... if you want me to be...');
+                        if (mariaConvo2 === 'All I want from you is an answer!') {
+                            alert('STARTING WITH 300 POINTS!')
+                            score = 300;
+                        }
+                    } else {
+                        startGame();
+                    }
+                }
+
+
+
+                else if (startBruh === 'Hunter') {
+                    let sheesh = prompt('Shawty callin my?');
+                    if (sheesh === 'phone') {
+                        alert('STARTING WITH 100 POINTS!')
+                        score = 100;
+                    }
+                }
+
+                //PLUH MEME EASTER EGG
+
+                else if (startBruh === 'pluh') {
+                    alert('PLUHHHHH')
+
+                }
+
+                //JOHN DEERE EASTER EGG
+
+                else if (startBruh === 'john') {
+                    alert('DEERE!')
+                }
+
+                //ENGLISH TEACHER EASTER EGG
+
+                else if (startBruh === 'Sprenkle') {
+                    alert('BEST ENGLISH CLASS EVER')
+                }
+
+                //BATTLE RAP EASTER EGG - FAMOUS AIRHORN SOUND EFFECT
+
+                else if (startBruh === 'don demarco') {
+                    alert('ER ERR ERR ERR ERR ERR ERR ERRRRR')
+                }
+                //SMOSH EASTER EGG - FAMOUS LoZ SONG BY SMOSH
+
+                else if (startBruh === 'link') {
+                    alert('L to the I to the N to the K!')
+                }
+
+                //GAMING JOKE EASTER EGG - MANY THINK LINK IS ZELDA
+
+                else if (startBruh === 'triforce') {
+                    alert('LINK IS NOT ZELDA!')
+
+                    //Meloncholy EASTER EGG
+
+                } else if (startBruh === 'meloncholy') {
+                    alert('Why are you feeling down?')
+                }
+
+                //CLASSMATE EASTER EGG - BROS ALWAYS TALKING ABOUT WARTHUNDER
+
+                else if (startBruh === 'Riley') {
+                    alert('Download War Thunder TODAY! - Riley')
+                }
+
+                //FAVORITE PEN EASTER EGG - FELT TIP ALL THE WAY!
+
+                else if (startBruh === 'Pen') {
+                    alert('My favorite pens are Felt Tip!')
+                }
+
+
+                //TIMER
+
+                timer = gameTimeInSeconds;
+                $("#timer").text("Time: " + timer);
+                showMole();
+                const countdown = setInterval(function () {
+                    timer--;
+                    $("#timer").text("Time: " + timer);
+                    if (timer <= 0) {
+                        clearInterval(countdown);
+                    }
+                }, 1000);
+            }
+
+
+
+
+            //PROMPTS PLAYER TO ENTER NAME FOR LEADERBOARD!
+
+            function endGame() {
+                $("#scoreboard").show();
+                $("#leaderboard-list").empty();
+                const playerName = prompt("ENTER INITIALS"); //CONTAINS NAME EASTER EGGS
+                if (playerName === 'AVGN') {
+                    alert('He\'s gonna take you back to the PAST!!!')
+                } else if (playerName === 'LMFAO') {
+                    alert('LMFAOOOO YOU KNOW WHAT HAPPENS TO SOCCER BALLS?')
+                    window.close();
+                } else if (playerName === 'AAA') {
+                    window.open("https://www.youtube.com/shorts/AwY4pzb0Pjs");
+                }
+                leaderboard.push({ name: playerName, score: score });
+                leaderboard.sort((a, b) => b.score - a.score); // Sort by best score
+                leaderboard = leaderboard.slice(0, 5);
+                localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+                leaderboard.forEach(player => {
+                    $("#leaderboard-list").append(`<li>${player.name}: ${player.score}</li>`);
+                });
+                $("#leaderboard-list").append(`<li>Your score: ${score}</li>`);
+            }
+
+
+
+
+            $("#start-game").click(function () {
+                $("#scoreboard").hide();
+                startGame();
+            });
+
+
+
+            //CLEAR LEADERBOARD ENTRIES!
+
+            $("#clear-leaderboard").click(function () {
+                localStorage.removeItem('leaderboard');
+                leaderboard = [];
+                $("#leaderboard-list").empty();
+            });
+
+
+
+        });
+    </script>
+
+</body>
+</html>
